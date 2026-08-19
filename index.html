@@ -344,7 +344,7 @@ input,textarea,select,button{max-width:100%;font-size:16px}
     <div class="benefit-slide">💵 <strong>Cash on Delivery Available</strong></div>
     <div class="benefit-slide">🛡️ <strong>7 Days Checking Warranty</strong></div>
   </div>
-  <button class="benefit-arrow prev type="button" aria-label="Previous">‹</button>
+  <button class="benefit-arrow prev" type="button" aria-label="Previous">‹</button>
   <button class="benefit-arrow next" type="button" aria-label="Next">›</button>
   <div class="benefit-dots">
     <button class="benefit-dot active" type="button" aria-label="Point 1"></button>
@@ -615,6 +615,7 @@ input,textarea,select,button{max-width:100%;font-size:16px}
 
   function price() {
     const el = document.getElementById('salePrice');
+    // The live selling price is Rs. 1,999.
     return Number((el ? el.textContent : '').replace(/[^0-9]/g, '')) || 1999;
   }
 
@@ -691,6 +692,23 @@ input,textarea,select,button{max-width:100%;font-size:16px}
 
         if (!response.ok) {
           throw new Error(result.error || 'Order could not be placed.');
+        }
+
+        // TikTok Pixel: send the completed COD order with a valid content_id.
+        if (window.ttq && typeof window.ttq.track === 'function') {
+          window.ttq.track('PlaceAnOrder', {
+            contents: [{
+              content_id: '3-layer-storage-organizer',
+              content_type: 'product',
+              content_name: '3-Layer Storage Organizer',
+              price: unitPrice,
+              quantity: quantity
+            }],
+            content_id: '3-layer-storage-organizer',
+            content_type: 'product',
+            value: total,
+            currency: 'PKR'
+          });
         }
 
         const success = document.getElementById('success');
