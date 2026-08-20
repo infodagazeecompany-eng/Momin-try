@@ -195,6 +195,19 @@ nav{display:none!important}
 .input-wrap{position:relative}
 .input-wrap input{padding-right:45px}
 .input-icon{position:absolute;right:14px;top:50%;transform:translateY(-50%);width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:#f2a51c;color:#fff;font-size:12px}
+.deal-picker{margin:4px 0 20px}
+.deal-picker-title{display:block;font-size:11px;letter-spacing:.7px;font-weight:900;color:#5d4c41;margin:0 0 8px}
+.deal-options{display:grid;gap:9px}
+.deal-option{display:flex;align-items:center;gap:10px;padding:13px 14px;border:1px solid #e3d7c8;border-radius:11px;background:#fffaf5;cursor:pointer;transition:.2s}
+.deal-option:hover{border-color:#d39a24;background:#fff}
+.deal-option.active{border-color:#d39a24;background:#fff7e8;box-shadow:0 0 0 3px rgba(211,154,36,.10)}
+.deal-option input{width:18px;height:18px;accent-color:#c58a09;flex:0 0 auto}
+.deal-copy{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%}
+.deal-name{font-weight:900;color:#33271f}
+.deal-price{font-weight:900;color:#b57900;white-space:nowrap}
+
+.deal-badge{display:inline-block;margin-left:7px;padding:3px 7px;border-radius:20px;background:#eaf7ed;color:#27683d;font-size:9px;letter-spacing:.5px;font-weight:900;vertical-align:middle}
+.deal-badge.mega{background:#f8e6b5;color:#8a6200}
 .quantity-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0 19px}
 .quantity-row label{margin-bottom:2px}
 .quantity-note{font-size:11px;color:#a08f82}
@@ -475,6 +488,24 @@ input,textarea,select,button{max-width:100%;font-size:16px}
           <input id="city" required autocomplete="address-level2" placeholder="Your city">
         </div>
 
+        <div class="deal-picker">
+          <label class="deal-picker-title">SELECT DEAL <em>*</em></label>
+          <div class="deal-options">
+            <label class="deal-option active">
+              <input type="radio" name="deal" value="1999" data-deal="Pack 1" checked>
+              <span class="deal-copy"><span class="deal-name">Pack 1</span><span class="deal-price">Rs. 1,999</span></span>
+            </label>
+            <label class="deal-option">
+              <input type="radio" name="deal" value="2999" data-deal="Pack 2">
+              <span class="deal-copy"><span class="deal-name">Pack 2 <small class="deal-badge">BEST VALUE</small></span><span class="deal-price">Rs. 2,999</span></span>
+            </label>
+            <label class="deal-option">
+              <input type="radio" name="deal" value="3999" data-deal="Pack 3">
+              <span class="deal-copy"><span class="deal-name">Pack 3 <small class="deal-badge mega">MEGA DEAL</small></span><span class="deal-price">Rs. 3,999</span></span>
+            </label>
+          </div>
+        </div>
+
         <div class="quantity-row">
           <div>
             <label>QUANTITY</label>
@@ -614,9 +645,13 @@ input,textarea,select,button{max-width:100%;font-size:16px}
   let quantity = 1;
 
   function price() {
-    const el = document.getElementById('salePrice');
-    // The live selling price is Rs. 1,999.
-    return Number((el ? el.textContent : '').replace(/[^0-9]/g, '')) || 1999;
+    const selected = document.querySelector('input[name="deal"]:checked');
+    return selected ? Number(selected.value) : 1999;
+  }
+
+  function selectedDeal() {
+    const selected = document.querySelector('input[name="deal"]:checked');
+    return selected ? (selected.dataset.deal || 'Pack 1') : 'Pack 1';
   }
 
   function render() {
@@ -635,6 +670,18 @@ input,textarea,select,button{max-width:100%;font-size:16px}
     const minus = document.getElementById('minusQty');
     const plus = document.getElementById('plusQty');
     const form = document.getElementById('orderForm');
+    const dealOptions = Array.from(document.querySelectorAll('.deal-option'));
+    const dealInputs = Array.from(document.querySelectorAll('input[name="deal"]'));
+
+    dealInputs.forEach(function (input) {
+      input.addEventListener('change', function () {
+        dealOptions.forEach(function (option) {
+          const radio = option.querySelector('input[name="deal"]');
+          option.classList.toggle('active', radio && radio.checked);
+        });
+        render();
+      });
+    });
 
     if (minus) {
       minus.addEventListener('click', function () {
@@ -681,6 +728,7 @@ input,textarea,select,button{max-width:100%;font-size:16px}
             phone: document.getElementById('phone').value.trim(),
             address: document.getElementById('address').value.trim(),
             city: document.getElementById('city').value.trim(),
+            deal: selectedDeal(),
             product: '3-Layer Self-Compression Storage Organizer',
             quantity: quantity,
             price: unitPrice,
