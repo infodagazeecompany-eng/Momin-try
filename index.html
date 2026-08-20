@@ -349,6 +349,23 @@ input,textarea,select,button{max-width:100%;font-size:16px}
 </script>
 <!-- TikTok Pixel Code End -->
 
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.loaded=!0;n.version='2.0';n.queue=[];
+t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1170275031996526');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=1170275031996526&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
+
 </head>
 <body>
 <section class="top-slider" aria-label="Store benefits">
@@ -764,6 +781,13 @@ input,textarea,select,button{max-width:100%;font-size:16px}
           '✓ Order placed successfully! Your Order ID is <b>' +
           result.orderId + '</b>';
         success.style.display = 'block';
+      if (typeof fbq === 'function') {
+        fbq('track', 'Purchase', {
+          value: Number(total),
+          currency: 'PKR'
+        });
+      }
+
 
         form.reset();
         quantity = 1;
